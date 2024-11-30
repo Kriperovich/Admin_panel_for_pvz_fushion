@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> <!-- Made by Kriperovich -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Made by Kriperovich -->
+    <title>Admin Panel</title> <!-- Made by Kriperovich -->
+    <style> <!-- Made by Kriperovich -->
+        body { <!-- Made by Kriperovich -->
+            font-family: Arial, sans-serif; <!-- Made by Kriperovich -->
+        } <!-- Made by Kriperovich -->
+        .container { <!-- Made by Kriperovich -->
+            max-width: 600px; <!-- Made by Kriperovich -->
+            margin: 0 auto; <!-- Made by Kriperovich -->
+        } <!-- Made by Kriperovich -->
+        .record { <!-- Made by Kriperovich -->
+            margin-bottom: 10px; <!-- Made by Kriperovich -->
+            padding: 10px; <!-- Made by Kriperovich -->
+            border: 1px solid #ccc; <!-- Made by Kriperovich -->
+            border-radius: 5px; <!-- Made by Kriperovich -->
+        } <!-- Made by Kriperovich -->
+        .record-actions button { <!-- Made by Kriperovich -->
+            margin-right: 5px; <!-- Made by Kriperovich -->
+        } <!-- Made by Kriperovich -->
+    </style> <!-- Made by Kriperovich -->
+</head>
+<body> <!-- Made by Kriperovich -->
+    <div class="container"> <!-- Made by Kriperovich -->
+        <h1>Admin Panel</h1> <!-- Made by Kriperovich -->
+        <button id="uploadButton">Загрузить</button> <!-- Made by Kriperovich -->
+        <button id="exportButton">Экспортировать</button> <!-- Made by Kriperovich -->
+        <br><br> <!-- Made by Kriperovich -->
+        <div> <!-- Made by Kriperovich -->
+            <label for="nameInput">Название:</label> <!-- Made by Kriperovich -->
+            <input type="text" id="nameInput"> <!-- Made by Kriperovich -->
+        </div> <!-- Made by Kriperovich -->
+        <div> <!-- Made by Kriperovich -->
+            <label for="linkInput">Ссылка:</label> <!-- Made by Kriperovich -->
+            <input type="text" id="linkInput"> <!-- Made by Kriperovich -->
+        </div> <!-- Made by Kriperovich -->
+        <div> <!-- Made by Kriperovich -->
+            <label for="descriptionInput">Описание:</label> <!-- Made by Kriperovich -->
+            <input type="text" id="descriptionInput"> <!-- Made by Kriperovich -->
+        </div> <!-- Made by Kriperovich -->
+        <div> <!-- Made by Kriperovich -->
+            <label for="dependencyInput">Зависимость:</label> <!-- Made by Kriperovich -->
+            <input type="text" id="dependencyInput"> <!-- Made by Kriperovich -->
+        </div> <!-- Made by Kriperovich -->
+        <div> <!-- Made by Kriperovich -->
+            <label for="defaultCheckbox">Включено по умолчанию:</label> <!-- Made by Kriperovich -->
+            <input type="checkbox" id="defaultCheckbox"> <!-- Made by Kriperovich -->
+        </div> <!-- Made by Kriperovich -->
+        <button id="addButton">Добавить</button> <!-- Made by Kriperovich -->
+        <h2>Сохраненные записи:</h2> <!-- Made by Kriperovich -->
+        <div id="records"></div> <!-- Made by Kriperovich -->
+    </div> <!-- Made by Kriperovich -->
+
+    <script> <!-- Made by Kriperovich -->
+        let records = []; <!-- Made by Kriperovich -->
+        let recordId = 1; <!-- Made by Kriperovich -->
+        let editingId = null; <!-- Made by Kriperovich -->
+
+        document.getElementById('addButton').addEventListener('click', () => { <!-- Made by Kriperovich -->
+            const name = document.getElementById('nameInput').value.trim(); <!-- Made by Kriperovich -->
+            const link = document.getElementById('linkInput').value.trim(); <!-- Made by Kriperovich -->
+            const description = document.getElementById('descriptionInput').value.trim(); <!-- Made by Kriperovich -->
+            const dependency = document.getElementById('dependencyInput').value.trim(); <!-- Made by Kriperovich -->
+            const isDefault = document.getElementById('defaultCheckbox').checked; <!-- Made by Kriperovich -->
+
+            if (name && link) { <!-- Made by Kriperovich -->
+                if (editingId !== null) { <!-- Made by Kriperovich -->
+                    const record = records.find(r => r.id === editingId); <!-- Made by Kriperovich -->
+                    if (record) { <!-- Made by Kriperovich -->
+                        record.name = name; <!-- Made by Kriperovich -->
+                        record.link = link; <!-- Made by Kriperovich -->
+                        record.description = description; <!-- Made by Kriperovich -->
+                        record.dependency = dependency; <!-- Made by Kriperovich -->
+                        record.isDefault = isDefault; <!-- Made by Kriperovich -->
+                    } <!-- Made by Kriperovich -->
+                    editingId = null; <!-- Made by Kriperovich -->
+                } else { <!-- Made by Kriperovich -->
+                    records.push({  <!-- Made by Kriperovich -->
+                        id: recordId++,  <!-- Made by Kriperovich -->
+                        name,  <!-- Made by Kriperovich -->
+                        link,  <!-- Made by Kriperovich -->
+                        description,  <!-- Made by Kriperovich -->
+                        dependency,  <!-- Made by Kriperovich -->
+                        isDefault  <!-- Made by Kriperovich -->
+                    });  <!-- Made by Kriperovich -->
+                } <!-- Made by Kriperovich -->
+                renderRecords(); <!-- Made by Kriperovich -->
+                clearInputs(); <!-- Made by Kriperovich -->
+            } <!-- Made by Kriperovich -->
+        }); <!-- Made by Kriperovich -->
+
+        function renderRecords() { <!-- Made by Kriperovich -->
+            const recordsDiv = document.getElementById('records'); <!-- Made by Kriperovich -->
+            recordsDiv.innerHTML = ''; <!-- Made by Kriperovich -->
+            records.forEach(record => { <!-- Made by Kriperovich -->
+                const recordDiv = document.createElement('div'); <!-- Made by Kriperovich -->
+                recordDiv.classList.add('record'); <!-- Made by Kriperovich -->
+                recordDiv.innerHTML = ` <!-- Made by Kriperovich -->
+                    <strong>${record.id}: ${record.name}</strong><br> <!-- Made by Kriperovich -->
+                    Ссылка: <a href="${record.link}" target="_blank">${record.link}</a><br> <!-- Made by Kriperovich -->
+                    Описание: ${record.description}<br> <!-- Made by Kriperovich -->
+                    Зависимость: ${record.dependency}<br> <!-- Made by Kriperovich -->
+                    Включено по умолчанию: ${record.isDefault}<br> <!-- Made by Kriperovich -->
+                    <div class="record-actions"> <!-- Made by Kriperovich -->
+                        <button onclick="deleteRecord(${record.id})">Удалить</button> <!-- Made by Kriperovich -->
+                        <button onclick="editRecord(${record.id})">Изменить</button> <!-- Made by Kriperovich -->
+                    </div> <!-- Made by Kriperovich -->
+                `; <!-- Made by Kriperovich -->
+                recordsDiv.appendChild(recordDiv); <!-- Made by Kriperovich -->
+            }); <!-- Made by Kriperovich -->
+        } <!-- Made by Kriperovich -->
+
+        function deleteRecord(id) { <!-- Made by Kriperovich -->
+            records = records.filter(record => record.id !== id); <!-- Made by Kriperovich -->
+            renderRecords(); <!-- Made by Kriperovich -->
+        } <!-- Made by Kriperovich -->
+
+        function editRecord(id) { <!-- Made by Kriperovich -->
+            const record = records.find(record => record.id === id); <!-- Made by Kriperovich -->
+            if (record) { <!-- Made by Kriperovich -->
+                document.getElementById('nameInput').value = record.name; <!-- Made by Kriperovich -->
+                document.getElementById('linkInput').value = record.link; <!-- Made by Kriperovich -->
+                document.getElementById('descriptionInput').value = record.description; <!-- Made by Kriperovich -->
+                document.getElementById('dependencyInput').value = record.dependency; <!-- Made by Kriperovich -->
+                document.getElementById('defaultCheckbox').checked = record.isDefault; <!-- Made by Kriperovich -->
+                editingId = id; <!-- Made by Kriperovich -->
+            } <!-- Made by Kriperovich -->
+        } <!-- Made by Kriperovich -->
+
+        function clearInputs() { <!-- Made by Kriperovich -->
+            document.getElementById('nameInput').value = ''; <!-- Made by Kriperovich -->
+            document.getElementById('linkInput').value = ''; <!-- Made by Kriperovich -->
+            document.getElementById('descriptionInput').value = ''; <!-- Made by Kriperovich -->
+            document.getElementById('dependencyInput').value = ''; <!-- Made by Kriperovich -->
+            document.getElementById('defaultCheckbox').checked = false; <!-- Made by Kriperovich -->
+        } <!-- Made by Kriperovich -->
+
+        document.getElementById('uploadButton').addEventListener('click', () => { <!-- Made by Kriperovich -->
+            const input = document.createElement('input'); <!-- Made by Kriperovich -->
+            input.type = 'file'; <!-- Made by Kriperovich -->
+            input.accept = '.txt'; <!-- Made by Kriperovich -->
+            input.onchange = (e) => { <!-- Made by Kriperovich -->
+                const file = e.target.files[0]; <!-- Made by Kriperovich -->
+                const reader = new FileReader(); <!-- Made by Kriperovich -->
+                reader.onload = () => { <!-- Made by Kriperovich -->
+                    const lines = reader.result.split('\n'); <!-- Made by Kriperovich -->
+                    records = lines.map((line, index) => { <!-- Made by Kriperovich -->
+                        const [id, name, link, description, dependency, isDefault] = line.split('#()'); <!-- Made by Kriperovich -->
+                        return {  <!-- Made by Kriperovich -->
+                            id: parseInt(id.trim()),  <!-- Made by Kriperovich -->
+                            name: name.trim(),  <!-- Made by Kriperovich -->
+                            link: link.trim(),  <!-- Made by Kriperovich -->
+                            description: description.trim(),  <!-- Made by Kriperovich -->
+                            dependency: dependency.trim(),  <!-- Made by Kriperovich -->
+                            isDefault: isDefault.trim() === 'true'  <!-- Made by Kriperovich -->
+                        };  <!-- Made by Kriperovich -->
+                    });  <!-- Made by Kriperovich -->
+                    recordId = records.length + 1;  <!-- Made by Kriperovich -->
+                    renderRecords();  <!-- Made by Kriperovich -->
+                };  <!-- Made by Kriperovich -->
+                reader.readAsText(file);  <!-- Made by Kriperovich -->
+            };  <!-- Made by Kriperovich -->
+            input.click();  <!-- Made by Kriperovich -->
+        });  <!-- Made by Kriperovich -->
+
+        document.getElementById('exportButton').addEventListener('click', () => { <!-- Made by Kriperovich -->
+            const data = records.map(record =>  <!-- Made by Kriperovich -->
+                `${record.id}#()${record.name}#()${record.link}#()${record.description}#()${record.dependency}#()${record.isDefault}`  <!-- Made by Kriperovich -->
+            ).join('\n');  <!-- Made by Kriperovich -->
+            const blob = new Blob([data], { type: 'text/plain' });  <!-- Made by Kriperovich -->
+            const a = document.createElement('a');  <!-- Made by Kriperovich -->
+            a.href = URL.createObjectURL(blob);  <!-- Made by Kriperovich -->
+            a.download = 'data.txt';  <!-- Made by Kriperovich -->
+            a.click();  <!-- Made by Kriperovich -->
+        });  <!-- Made by Kriperovich -->
+    </script> <!-- Made by Kriperovich -->
+</body> <!-- Made by Kriperovich -->
+</html> <!-- Made by Kriperovich -->
+
